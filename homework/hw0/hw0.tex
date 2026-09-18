@@ -1,70 +1,174 @@
 \documentclass[11pt]{article}
 
-% ---------- Packages ----------
 \usepackage[margin=1in]{geometry}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{caption}
 \usepackage{float}
-\usepackage{mathtools}
-\usepackage{siunitx}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{listings}
+\usepackage{subcaption}
 
-% ---------- MATLAB code ----------
-\lstset{
-    language=Matlab,
-    basicstyle=\ttfamily\small,
-    numbers=left,
-    numberstyle=\tiny,
-    frame=single,
-    breaklines=true,
-    showstringspaces=false
-}
 
-% ---------- Useful commands ----------
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
-\newcommand{\infNorm}[1]{\norm{#1}_{\infty}}
+\graphicspath{{figures/}}
 
-% ---------- Document ----------
+\title{MATH 550: Homework 0}
+\author{Isaac Curry}
+\date{}
+
 \begin{document}
 
-\begin{center}
-    {\Large \textbf{Numerical Solutions to Partial Differential Equations}}\\[0.4em]
-    {\large Homework 0}\\[1em]
+\maketitle
 
-    Isaac Curry\\
-    \today
-\end{center}
+\noindent
+\begin{minipage}[t]{0.42\textwidth}
+    \vspace{0pt}
 
-\hrule
-\vspace{1.5em}
+    \textbf{1)} A centered second-order difference was used at the
+    interior points of the domain, while first-order forward and backward
+    differences were used at the left and right boundaries, respectively,
+    to approximate the first derivative of
+    $f(x)=\exp(\sin x)$ on $[0,2\pi]$.
 
-% ============================================================
-\section*{Problem 1}
+    \medskip
 
-\subsection*{(a)}
+    The numerical approximation is compared with the exact derivative in
+    Figure~\ref{fig:p1_derivative}. The close agreement confirms that the
+    finite-difference approximation captures the derivative well, although
+    the comparison alone gives limited information about the error behavior.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.55\textwidth}
+    \vspace{0pt}
+    \centering
 
-% Work goes here.
+    \includegraphics[width=\linewidth]{p1_derivative_comparison.pdf}
 
+    \captionof{figure}{Exact and finite-difference derivatives for $N=100$.}
+    \label{fig:p1_derivative}
+\end{minipage}
 
-\subsection*{(b)}
+\medskip
 
-% Work goes here.
+\begin{figure}[htbp]
+    \centering
 
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p1_pointwise_error.pdf}
+        \caption{Pointwise absolute error with the first-order endpoint
+        errors highlighted.}
+        \label{fig:p1_pointwise}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p1_convergence.pdf}
+        \caption{Relative error convergence in the infinity and $2$-norms with reference lines.}
+        \label{fig:p1_convergence}
+    \end{subfigure}
 
-% ============================================================
-\section*{Problem 2}
+    \caption{Error behavior of the finite-difference approximation.}
+    \label{fig:p1_error_analysis}
+\end{figure}
 
-% Work goes here.
+\noindent
+For the \(2\)-norm, the error is dominated by the first-order endpoint errors, since the interior points are approximated with a second-order method. The error-vector norm therefore scales like \(O(h)\), while the norm of the exact derivative grows like \(\sqrt{N}=O(h^{-1/2})\). Thus, the relative \(2\)-norm error scales like \(O(h^{3/2})=O(N^{-3/2})\). The infinity norm is dominated by the first-order endpoint errors and therefore scales like \(O(N^{-1})\). These rates are confirmed in Figure 2b, where the reference slopes closely match the observed convergence rates.
 
+\newpage
 
-% ============================================================
-\section*{Problem 3}
+\noindent
+\begin{minipage}[t]{0.46\textwidth}
+    \vspace{0pt}
 
-% Work goes here.
+    \textbf{2)} The convenience of having our solution be periodic allows us
+    to use centered second-order differences at all points in the domain,
+    including the endpoints. The numerical approximation is compared with
+    the exact derivative in Figure~\ref{fig:p2_convergence}. We can see from
+    the figure and included table in the code that the relative error terms
+    for both norms converge at a rate of \(O(N^{-2})\), which is consistent
+    with the second-order accuracy of the centered difference approximation
+    at not just the interior points but for the endpoints as well.
+
+    \medskip
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.50\textwidth}
+    \vspace{0pt}
+    \centering
+
+    \includegraphics[width=\linewidth]{p2_convergence.pdf}
+
+    \captionof{figure}{Infinity and 2-norm convergence for the periodic
+    finite-difference approximations.}
+    \label{fig:p2_convergence}
+\end{minipage}
+
+\vspace{0.8cm}
+
+\noindent\textbf{3)} Our next problem considers a given ODE where we want to establish Dirichlet boundary conditions and a forcing function. Our method of manufactured solutions allows us to choose a solution and then determine the forcing function and boundary conditions that will produce the solution. We have chosen the solution \(u(x) = \sin(x)\) and set the corresponding boundary conditions and forcing function to test the solution. 
+The centered second-order approximations produce a tridiagonal linear system because each interior equation couples only neighboring grid values. The Dirichlet data are known, so their contributions were moved to the right-hand side before solving. The system was solved for interior points and then reconstructed.
+Our numerical solution is compared with the exact solution in Figure~\ref{fig:p3_solution}. The relative error convergence is shown in Figure~\ref{fig:p3_convergence}, where we can see that the error converges at a rate of \(O(N^{-2})\) for both norms.
+
+\begin{figure}[htbp]
+    \centering
+
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p3_solution_comparison.pdf}
+        \caption{Solution comparison for \(N=100\).}
+        \label{fig:p3_solution}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p3_convergence.pdf}
+        \caption{Relative error convergence in the infinity and $2$-norms with reference lines.}
+        \label{fig:p3_convergence}
+    \end{subfigure}
+
+    \caption{Error behavior of the finite-difference approximation.}
+    \label{fig:p3_error_analysis}
+\end{figure}
+
+\newpage
+
+\noindent\textbf{4)} 
+            Solving the Poisson equation over $x\in[0,5], y\in[0,5]$ with Dirichlet boundary conditions, 
+            we used a second-order centered difference approximation for the Laplacian operator. The boundary conditions 
+            were explicitly declared, the interior was solved for, and the solution was reconstructed. The numerical 
+            solution was compared with the exact solution, and the error convergence table and plot constructed. 
+            The results confirmed that the finite-difference approximation approaches the exact solution with a convergence 
+            rate of \(O(N^{-2})\) for the infinity norm, consistent with the second-order accuracy of the method.
+
+\begin{figure}[htbp]
+    \centering
+
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p4_dirichlet_solution.pdf}
+        \caption{2D numerical solution for \(N=100\)}
+        \label{fig:p4_dirichlet_solution}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{p4_dirichlet_convergence.pdf}
+        \caption{Infinity norm convergence with reference line.}
+        \label{fig:p4_dirichlet_convergence}
+    \end{subfigure}
+
+    \caption{Error behavior of the finite-difference approximation.}
+    \label{fig:p4_dirichlet_error_analysis}
+\end{figure}
+
+\vspace{0.4cm}
+\noindent
+With Neumann conditions imposed on all four boundaries, the resulting linear system is singular. 
+In the discrete system, the constant vector lies in the nullspace of the finite-difference Laplacian, 
+so the solution is only determined up to an additive constant. The same issue occurs in the PDE: 
+the Neumann data prescribe derivatives of \(u\), not its absolute level, so \(u+C\) satisfies the 
+same boundary conditions. A unique numerical solution can be obtained by adding one normalization 
+condition, such as fixing \(u(0,0)=0\) or prescribing the mean value of \(u\).
 
 
 \end{document}
